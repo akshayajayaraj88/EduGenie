@@ -1,0 +1,4 @@
+# Optional: local LaMini-Flan-T5 model for /explain (about 3 GB download on first run)
+transformers>=4.44
+torch>=2.3
+sentencepiece>=0.2

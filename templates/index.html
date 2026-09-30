@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduGenie – AI Learning Assistant</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <main class="container">
+    <header class="header">
+      <h1>EduGenie</h1>
+      <p class="tagline">Ask, understand, practise and plan your learning.</p>
+    </header>
+
+    <form id="task-form" class="card">
+      <div class="row">
+        <label for="task">What would you like to do?</label>
+        <select id="task" name="task">
+          <option value="qa">Ask a question</option>
+          <option value="explain">Explain a concept</option>
+          <option value="quiz">Generate a quiz</option>
+          <option value="summarize">Summarise a passage</option>
+          <option value="learn">Recommend a learning path</option>
+        </select>
+      </div>
+
+      <div class="row" id="level-row" hidden>
+        <label for="level">Your level</label>
+        <select id="level" name="level">
+          <option value="beginner">Beginner</option>
+          <option value="intermediate">Intermediate</option>
+          <option value="advanced">Advanced</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <label for="input" id="input-label">Your question</label>
+        <textarea id="input" name="input" rows="6" maxlength="10000" required
+                  placeholder="e.g. Which is the largest ocean?"></textarea>
+        <span class="counter" id="counter">0 characters</span>
+      </div>
+
+      <button type="submit" id="submit">Submit</button>
+    </form>
+
+    <section id="result" class="card result" hidden aria-live="polite"></section>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
