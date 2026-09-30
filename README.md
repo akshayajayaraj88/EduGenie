@@ -10,6 +10,11 @@ EduGenie is a lightweight AI learning assistant built with FastAPI and a plain H
 | Summarise a passage | `POST /summarize` | Gemini |
 | Learning path | `POST /learn/recommendations` | Gemini (JSON output) |
 
+## Documentation
+
+- **Windows users:** step-by-step [Windows Setup Guide](docs/WINDOWS_SETUP.md), including the Gemini API key and troubleshooting
+- **How to use EduGenie:** [User Guide](docs/USER_GUIDE.md)
+
 ## Setup (Mac M1 or any machine with Python 3.10+)
 
 ```bash
@@ -23,7 +28,9 @@ cp .env.example .env        # then paste your key into .env
 
 Get a free API key from [Google AI Studio](https://aistudio.google.com/apikey) and set `GEMINI_API_KEY` in `.env`.
 `GEMINI_MODEL` defaults to `gemini-3.8-flash`; use any current model from the
-[Gemini models list](https://ai.google.dev/gemini-api/docs/models).
+[Gemini models list](https://ai.google.dev/gemini-api/docs/models). If it is overloaded, EduGenie retries and then
+switches to `GEMINI_FALLBACK_MODEL` (default `gemini-3.5-flash-lite`). All settings are listed in the
+[settings reference](docs/WINDOWS_SETUP.md#settings-reference-env).
 
 ## Run
 
