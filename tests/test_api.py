@@ -115,3 +115,34 @@ def test_missing_api_key_gives_clear_error(client, monkeypatch):
     r = client.post("/qa", json={"question": "Which is the largest ocean?"})
     assert r.status_code == 502
     assert "GEMINI_API_KEY" in r.json()["detail"]
+
+
+def test_overloaded_model_falls_back(monkeypatch):
+    """A 503 on the main model retries, then switches to the fallback model."""
+    calls = []
+
+    class FakeModels:
+        def generate_content(self, model, contents, config):
+            calls.append(model)
+            if model == "main-model":
+                raise Exception("503 UNAVAILABLE. This model is currently experiencing high demand.")
+            return type("R", (), {"text": "ok from fallback"})()
+
+    fake_client = type("C", (), {"models": FakeModels()})()
+    monkeypatch.setattr(gemini_client, "_get_client", lambda: fake_client)
+    monkeypatch.setattr(gemini_client.time, "sleep", lambda s: None)
+    monkeypatch.setenv("GEMINI_MODEL", "main-model")
+    monkeypatch.setenv("GEMINI_FALLBACK_MODEL", "backup-model")
+    assert gemini_client.generate("hi") == "ok from fallback"
+    assert calls == ["main-model"] * 3 + ["backup-model"]
+
+
+def test_overloaded_everywhere_gives_friendly_error(monkeypatch):
+    class FakeModels:
+        def generate_content(self, model, contents, config):
+            raise Exception("503 UNAVAILABLE")
+
+    monkeypatch.setattr(gemini_client, "_get_client", lambda: type("C", (), {"models": FakeModels()})())
+    monkeypatch.setattr(gemini_client.time, "sleep", lambda s: None)
+    with pytest.raises(gemini_client.GeminiError, match="overloaded"):
+        gemini_client.generate("hi")

@@ -150,11 +150,23 @@ async function handleSubmit(event) {
   submitBtn.disabled = true;
   showLoading();
   try {
-    const response = await fetch(task.endpoint, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(task.body(text, levelSelect.value)),
-    });
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 120000);
+    let response;
+    try {
+      response = await fetch(task.endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(task.body(text, levelSelect.value)),
+        signal: controller.signal,
+      });
+    } catch (err) {
+      throw new Error(err.name === "AbortError"
+        ? "No answer after 2 minutes. Check the server terminal for errors."
+        : "Can't reach the EduGenie server. Is uvicorn still running?");
+    } finally {
+      clearTimeout(timer);
+    }
     const data = await response.json().catch(() => ({}));
     if (!response.ok) {
       const detail = Array.isArray(data.detail)
